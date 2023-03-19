@@ -128,5 +128,5 @@ pub fn parse_key(input: &str) -> Result<Key, Box<dyn Error>> {
         return Ok(key);
     }
 
-    return Err(format!("unknown key '{}'", input).into());
+    Err(format!("unknown key '{}'", input).into())
 }

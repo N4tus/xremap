@@ -2,6 +2,7 @@ use evdev::{EventType, InputEvent, Key};
 
 // Input to EventHandler. This should only contain things that are easily testable.
 #[derive(Debug)]
+#[allow(clippy::enum_variant_names)]
 pub enum Event {
     // InputEvent (EventType::KEY) sent from evdev
     KeyEvent(KeyEvent),
@@ -34,12 +35,11 @@ pub enum KeyValue {
 impl Event {
     // Convert evdev's raw InputEvent to xremap's internal Event
     pub fn new(event: InputEvent) -> Event {
-        let event = match event.event_type() {
+        match event.event_type() {
             EventType::KEY => Event::KeyEvent(KeyEvent::new_with(event.code(), event.value())),
             EventType::RELATIVE => Event::RelativeEvent(RelativeEvent::new_with(event.code(), event.value())),
             _ => Event::OtherEvents(event),
-        };
-        event
+        }
     }
 }
 

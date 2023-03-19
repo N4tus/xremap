@@ -86,7 +86,6 @@ impl EventHandler {
             match event {
                 Event::KeyEvent(key_event) => {
                     self.on_key_event(key_event, config)?;
-                    ()
                 }
                 Event::RelativeEvent(relative_event) => {
                     self.on_relative_event(relative_event, &mut mouse_movement_collection, config)?
@@ -97,7 +96,7 @@ impl EventHandler {
             };
         }
         // if there is at least one mouse movement event, sending all of them as one MouseMovementEventCollection
-        if mouse_movement_collection.len() > 0 {
+        if !mouse_movement_collection.is_empty() {
             self.send_action(Action::MouseMovementEventCollection(mouse_movement_collection));
         }
         Ok(self.actions.drain(..).collect())
@@ -396,7 +395,7 @@ impl EventHandler {
                             continue;
                         }
                         let (extra_modifiers, missing_modifiers) = self.diff_modifiers(&entry.modifiers);
-                        if (exact_match && extra_modifiers.len() > 0) || missing_modifiers.len() > 0 {
+                        if (exact_match && !extra_modifiers.is_empty()) || !missing_modifiers.is_empty() {
                             continue;
                         }
 
@@ -427,7 +426,7 @@ impl EventHandler {
                         continue;
                     }
                     let (extra_modifiers, missing_modifiers) = self.diff_modifiers(&entry.modifiers);
-                    if (exact_match && extra_modifiers.len() > 0) || missing_modifiers.len() > 0 {
+                    if (exact_match && !extra_modifiers.is_empty()) || !missing_modifiers.is_empty() {
                         continue;
                     }
                     if let Some(application_matcher) = &entry.application {
@@ -512,8 +511,8 @@ impl EventHandler {
         // Build extra or missing modifiers. Note that only MODIFIER_KEYS are handled
         // because logical modifiers shouldn't make an impact outside xremap.
         let (mut extra_modifiers, mut missing_modifiers) = self.diff_modifiers(&key_press.modifiers);
-        extra_modifiers.retain(|key| MODIFIER_KEYS.contains(&key) && !self.extra_modifiers.contains(&key));
-        missing_modifiers.retain(|key| MODIFIER_KEYS.contains(&key));
+        extra_modifiers.retain(|key| MODIFIER_KEYS.contains(key) && !self.extra_modifiers.contains(key));
+        missing_modifiers.retain(|key| MODIFIER_KEYS.contains(key));
 
         // Emulate the modifiers of KeyPress
         self.send_keys(&missing_modifiers, PRESS);
@@ -553,7 +552,7 @@ impl EventHandler {
             .modifiers
             .iter()
             .filter(|modifier| !contains_modifier(modifiers, modifier))
-            .map(|modifier| modifier.clone())
+            .copied()
             .collect();
         let missing_modifiers: Vec<Key> = modifiers
             .iter()
@@ -571,7 +570,7 @@ impl EventHandler {
                 }
             })
             .collect();
-        return (extra_modifiers, missing_modifiers);
+        (extra_modifiers, missing_modifiers)
     }
 
     fn match_modifier(&self, modifier: &Modifier) -> bool {
@@ -619,20 +618,13 @@ impl EventHandler {
     }
 }
 
-fn is_remap(actions: &Vec<KeymapAction>) -> bool {
-    actions.iter().all(|x| match x {
-        KeymapAction::Remap(..) => true,
-        _ => false,
-    })
+fn is_remap(actions: &[KeymapAction]) -> bool {
+    actions.iter().all(|x| matches!(x, KeymapAction::Remap(..)))
 }
 
-fn with_extra_modifiers(
-    actions: &Vec<KeymapAction>,
-    extra_modifiers: &Vec<Key>,
-    exact_match: bool,
-) -> Vec<TaggedAction> {
+fn with_extra_modifiers(actions: &[KeymapAction], extra_modifiers: &Vec<Key>, exact_match: bool) -> Vec<TaggedAction> {
     let mut result: Vec<TaggedAction> = vec![];
-    if extra_modifiers.len() > 0 {
+    if !extra_modifiers.is_empty() {
         // Virtually release extra modifiers so that they won't be physically released on KeyPress
         result.push(TaggedAction {
             action: KeymapAction::SetExtraModifiers(extra_modifiers.clone()),
@@ -643,14 +635,14 @@ fn with_extra_modifiers(
         action: action.clone(),
         exact_match,
     }));
-    if extra_modifiers.len() > 0 {
+    if !extra_modifiers.is_empty() {
         // Resurrect the modifier status
         result.push(TaggedAction {
             action: KeymapAction::SetExtraModifiers(vec![]),
             exact_match,
         });
     }
-    return result;
+    result
 }
 
 fn contains_modifier(modifiers: &Vec<Modifier>, key: &Key) -> bool {

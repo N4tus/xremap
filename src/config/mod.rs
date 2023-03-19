@@ -47,7 +47,7 @@ pub struct Config {
 }
 
 pub fn load_config(filename: &Path) -> Result<Config, Box<dyn error::Error>> {
-    let yaml = fs::read_to_string(&filename)?;
+    let yaml = fs::read_to_string(filename)?;
     let mut config: Config = serde_yaml::from_str(&yaml)?;
 
     // Timestamp for --watch=config
@@ -86,5 +86,5 @@ where
     for key_str in key_strs {
         keys.push(parse_key(&key_str).map_err(serde::de::Error::custom)?);
     }
-    return Ok(keys);
+    Ok(keys)
 }

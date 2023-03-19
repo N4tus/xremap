@@ -67,6 +67,6 @@ fn parse_modifier(modifier: &str) -> Result<Modifier, Box<dyn Error>> {
         "WIN" => Ok(Modifier::Windows),
         "WINDOWS" => Ok(Modifier::Windows),
         // else
-        key => parse_key(key).map(|key| Modifier::Key(key)),
+        key => parse_key(key).map(Modifier::Key),
     }
 }

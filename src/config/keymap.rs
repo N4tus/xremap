@@ -68,7 +68,7 @@ pub fn build_keymap_table(keymaps: &Vec<Keymap>) -> HashMap<Key, Vec<KeymapEntry
             table.insert(key_press.key, entries);
         }
     }
-    return table;
+    table
 }
 
 // Subset of KeymapEntry for override_remap
@@ -97,5 +97,5 @@ pub fn build_override_table(
         });
         table.insert(key_press.key, entries);
     }
-    return table;
+    table
 }

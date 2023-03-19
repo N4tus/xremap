@@ -108,7 +108,7 @@ pub fn get_input_devices(
         // alternative is `Vec::retain_mut` whenever that gets stabilized
         .filter_map(|mut device| {
             // filter out any not matching devices and devices that error on grab
-            (device.is_input_device(device_opts, ignore_opts, mouse) && device.grab()).then(|| device)
+            (device.is_input_device(device_opts, ignore_opts, mouse) && device.grab()).then_some(device)
         })
         .collect();
 
