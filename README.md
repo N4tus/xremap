@@ -188,7 +188,7 @@ Some [custom aliases](src/config/key.rs) like `SHIFT_R`, `CONTROL_L`, etc. are p
 
 If you specify a map containing `held` and `alone`, you can use the key for two purposes.
 The key is considered `alone` if it's pressed and released within `alone_timeout_millis` (default: 1000)
-before any other key is pressed. Otherwise it's considered `held`.
+before any other key is pressed. Otherwise, it's considered `held`.
 
 ### keymap
 
@@ -289,7 +289,7 @@ busctl --user call org.gnome.Shell /com/k0kubun/Xremap com.k0kubun.Xremap WMClas
 Xremap prints the active window to the console. 
 However, it will only start printing, once a mapping has been triggered that uses an application filter. 
 So you have to create a mapping with a filter using a dummy application name and trigger it.
-Then each time you switch to a new window xremap will print its caption, class, and name in the following style:
+Then, each time you switch to a new window xremap will print its caption, class, and name in the following style:
 `active window: caption: '<caption>', class: '<class>', name: '<name>'`
 You want to use the class for the filter.  
 
@@ -312,7 +312,7 @@ Sometimes you want to define a generic key map that is available in all applicat
 keymap:
   - name: override to make libreoffice-writer go to end of word but before final space like emacs
     application:
-      only: libreoffice-writter
+      only: libreoffice-writer
     remap:
       Alt-f: [right, C-right, left]
   - name: generic for all apps
@@ -341,7 +341,7 @@ keymap:
 ### keypress_delay_ms
 
 Some applications have trouble understanding synthesized key events, especially on
-Wayland. `keypress_delay_ms` can be used to workaround the issue.
+Wayland. `keypress_delay_ms` can be used to work around the issue.
 See [#179](https://github.com/k0kubun/xremap/issues/179) for the detail.
 
 ## License
